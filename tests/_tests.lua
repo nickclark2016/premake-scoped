@@ -1,4 +1,4 @@
-scoped = require('scoped')
+scoped = require('init')
 
 return {
     "test_scoped.lua"

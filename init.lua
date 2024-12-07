@@ -9,6 +9,7 @@ local scoped = {}
 scoped._VERSION = "1.0.0"
 
 local group_stack = {}
+local filter_stack = {}
 
 --
 -- Scoped workspace function
@@ -44,9 +45,14 @@ end
 -- @post No filter will be active upon exit
 --
 function scoped.filter(flt, fn)
-    filter(flt)
+    local top = filter_stack[#filter_stack] or {}
+    table.insert(filter_stack, flt)
+
+    filter(filter_stack)
     fn()
-    filter({})
+
+    table.remove(filter_stack, #filter_stack)
+    filter(filter_stack)
 end
 
 --

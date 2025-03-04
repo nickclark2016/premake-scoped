@@ -54,7 +54,7 @@ function suite.buildNestedScopedGroup()
         scoped.group("MyGroup", function()
             scoped.group("MySubGroup", function()
                 scoped.project("MyProject", function()
-
+                    
                 end)
             end)
         end)
@@ -65,4 +65,15 @@ function suite.buildNestedScopedGroup()
 
     test.isequal("MyProject", prj.name)
     test.isequal("MyGroup/MySubGroup", prj.group)
+end
+
+function suite.buildUsage()
+    scoped.workspace("MyWorkspace", function()
+        scoped.project("MyProject", function()
+            scoped.usage("MyUsage", function()
+                local activeUsg = usage()
+                test.isequal("MyUsage", activeUsg.name)
+            end)
+        end)
+    end)
 end

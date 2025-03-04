@@ -10,7 +10,7 @@ scoped = require('premake-scoped')
 ```
 
 ### API and Usage
-This library provides direct replacements for the premake `workspace`, `project`, `group`, and `filter` APIs.
+This library provides direct replacements for the premake `workspace`, `project`, `usage`, `group`, and `filter` APIs.
 
 ```lua
 scoped.workspace('My Workspace', function(wks)
@@ -19,6 +19,10 @@ scoped.workspace('My Workspace', function(wks)
             scoped.project('My Project', function(prj)
                 scoped.filter({ 'configuration:Debug' }, function()
                 
+                end)
+
+                scoped.usage('MyUsage', function(usg)
+
                 end)
             end)
         end)

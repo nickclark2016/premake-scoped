@@ -3,10 +3,10 @@
 -- Copyright (c) 2024 Nick Clark
 -- MIT License
 
-require("premake", ">=5.0.0-alpha1")
+local p = require("premake", ">=5.0.0-alpha1")
 
 local scoped = {}
-scoped._VERSION = "1.0.0"
+scoped._VERSION = "1.1.0"
 
 local group_stack = {}
 local filter_stack = {}
@@ -19,6 +19,12 @@ local filter_stack = {}
 -- @post The active workspace will be set to all workspaces in the global scope.
 --
 function scoped.workspace(name, fn)
+    -- Log a warning if the workspace is already active
+    local activewks = p.api.scope.workspace
+    if activewks then
+        p.warn("Scoped workspace " .. name .. " is being created while workspace " .. activewks.name .. " is active.")
+    end
+
     local wks = workspace(name)
     fn(wks)
     workspace("*")
@@ -32,9 +38,37 @@ end
 -- @post The active scope will be set to the scope active upon entry to the function, or the parent scope if the prior scope is the same as the scope entered.
 --
 function scoped.project(name, fn)
+    local activeprj = p.api.project
+    if activeprj then
+        p.warn("Scoped project " .. name .. " is being created while project " .. activeprj.name .. " is active.")
+    end
+
+    local activewks = p.api.scope.workspace
+    if not activewks then
+        p.error("Error: Scoped project " .. name .. " is being created without an active workspace.")
+    end
+
     local prj = project(name)
     fn(prj)
     project("*")
+end
+
+--
+-- Scoped usage function
+--
+-- @param name Name of the usage
+-- @param fn Function to execute in the context of the usage
+-- @post No usage will be active upon exit
+--
+function scoped.usage(name, fn)
+    local activeusg = p.api.usage
+    if activeusg then
+        p.warn("Scoped usage " .. name .. " is being created while usage " .. activeusg.name .. " is active.")
+    end
+
+    local usg = usage(name)
+    fn(usg)
+    usage("*")
 end
 
 --

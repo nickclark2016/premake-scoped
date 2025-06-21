@@ -49,6 +49,58 @@ function suite.buildScopedGroup()
     test.isequal("MyGroup", prj.group)
 end
 
+function suite.buildNestedScopedGroupMulti()
+    scoped.workspace("MyWorkspace", function()
+        scoped.group("MyGroup", function()
+            scoped.group("MySubGroup", function()
+                scoped.project("MyProject", function()
+                    
+                end)
+            end)
+
+            scoped.project("MyOtherProject", function()
+                
+            end)
+        end)
+    end)
+
+    local wks = premake.global.getWorkspace("MyWorkspace")
+    local prj = test.getProject(wks, 1)
+    local otherPrj = test.getProject(wks, 2)
+
+    test.isequal("MyProject", prj.name)
+    test.isequal("MyGroup/MySubGroup", prj.group)
+
+    test.isequal("MyOtherProject", otherPrj.name)
+    test.isequal("MyGroup", otherPrj.group)
+end
+
+function suite.buildNestedScopedGroupMulti2()
+    scoped.workspace("MyWorkspace", function()
+        scoped.group("MyGroup", function()
+            scoped.project("MyOtherProject", function()
+                
+            end)
+
+            scoped.group("MySubGroup", function()
+                scoped.project("MyProject", function()
+                    
+                end)
+            end)
+        end)
+    end)
+
+    local wks = premake.global.getWorkspace("MyWorkspace")
+    local prj = test.getProject(wks, 2)
+    local otherPrj = test.getProject(wks, 1)
+
+    test.isequal("MyProject", prj.name)
+    test.isequal("MyGroup/MySubGroup", prj.group)
+
+    test.isequal("MyOtherProject", otherPrj.name)
+    test.isequal("MyGroup", otherPrj.group)
+end
+
 function suite.buildNestedScopedGroup()
     scoped.workspace("MyWorkspace", function()
         scoped.group("MyGroup", function()

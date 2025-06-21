@@ -6,7 +6,7 @@
 local p = require("premake", ">=5.0.0-alpha1")
 
 local scoped = {}
-scoped._VERSION = "1.1.0"
+scoped._VERSION = "1.2.0"
 
 local group_stack = {}
 local filter_stack = {}
@@ -48,9 +48,13 @@ function scoped.project(name, fn)
         p.error("Error: Scoped project " .. name .. " is being created without an active workspace.")
     end
 
+    local group_name = table.concat(group_stack, "/")
+    group(group_name)
+
     local prj = project(name)
     fn(prj)
     project("*")
+    group("*")
 end
 
 --
@@ -100,18 +104,16 @@ function scoped.group(grp, fn)
     -- Get the top of the group stack, or an empty string if the stack is empty
     -- Push the new group onto the stack
     -- Merge the group stack into a single string
-    local top = group_stack[#group_stack] or ""
     table.insert(group_stack, grp)
 
     local full_group = table.concat(group_stack, "/")
-    
     group(full_group)
     fn()
 
     -- Pop the group from the stack
     -- Merge the group stack into a single string
     -- Reapply the group
-    table.remove(group_stack, #group_stack)
+    table.remove(group_stack, nil)
     full_group = table.concat(group_stack, "/")
 
     if full_group == "" then
